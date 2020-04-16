@@ -1,33 +1,24 @@
-import React, { useEffect,  useState  }from 'react';
+import React, { useEffect,  useState  } from 'react';
+import api from './services/api';
+
 import {  
   SafeAreaView,
+  View,
   FlatList,  
   Text,  
   StyleSheet, 
   StatusBar, 
-  TouchableOpacity ,
-  View
+  TouchableOpacity,
 } from 'react-native';
-import api from './services/api';
 
 export default function App(){
   const [repositories,setRepositories] = useState([]);
 
-  useEffect(()=>{api.get('repositories').then(response => {
-    console.log(response.data);
-    setRepositories(response.data);
-  })},[]);
-
-  async function handleAddRepository(){
-    const response = await api.post('repositories',{
-      title: `Repositorio ${Date.now()}`,
-      url: `http://github.com/${Date.now()}`,
-      techs: ['NodeJS','ReactJS','React Native']});
-
-    const repository = response.data;
-
-    setRepositories([... repositories, repository]);
-    }
+  useEffect(()=>{
+      api.get('repositories').then(response => {
+     setRepositories(response.data);
+    })
+  },  []);
 
     async function handleLikeRepository(id){
       
@@ -53,7 +44,6 @@ export default function App(){
       <SafeAreaView  style={styles.container} >
       
       <FlatList 
-      
       data={repositories} 
       keyExtractor={repository => repository.id}  
       renderItem={({  item: repository  }) => (
@@ -69,7 +59,7 @@ export default function App(){
       <View style={styles.likesContainer}>
             <Text
               style={styles.likeText}
-              testID={`repository-likes-${id}`}
+              testID={`repository-likes-${repository.id}`}
             >
               {repository.likes} curtida{ repository.likes > 1 ? 's' : '' }
             </Text>
@@ -83,13 +73,9 @@ export default function App(){
             <Text style={styles.buttonText}>Curtir</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity activeOpacity={0.6} style={styles.button} 
-      onPress={handleAddRepository}>
-        <Text style={styles.buttonText}>Adicionar Repositorio</Text>
-      </TouchableOpacity>
-      
       </View>
       )} />
+      
        </SafeAreaView>
   </>
   );
